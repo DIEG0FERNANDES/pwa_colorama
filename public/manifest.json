@@ -1,6 +1,6 @@
 {
   "short_name": "Colorama",
-  "name": "Aplicação Colorama",
+  "name": "Aplicação PWA Colorama",
   "icons": [
     {
       "src": "favicon.ico",
