@@ -69,6 +69,16 @@ registerRoute(
   })
 );
 
+registerRoute(
+  ({ request }) => request.destination === 'script',
+  new StaleWhileRevalidate({
+    cacheName: 'js-cache',
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 50}),
+    ]
+  })
+);
+
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})
 self.addEventListener('message', (event) => {
