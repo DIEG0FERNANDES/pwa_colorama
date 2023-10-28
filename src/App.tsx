@@ -77,14 +77,14 @@ const colors = [
 
 ];
 
-const getRandomColor = () => {
+function getRandomColor() {
   const randomIndex = Math.floor(Math.random() * colors.length);
   return colors[randomIndex];
-};
+}
 
-function getContrastColor(hexColor: string) {
+function getContrastColors(hexColor: string) {
   if (typeof hexColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/i.test(hexColor)) {
-    return '#000'; 
+    return { textColor: '#000', backgroundColor: '#fff', buttonTextColor: '#fff', borderColor: '#fff' };
   }
 
   const r = parseInt(hexColor.slice(1, 3), 16);
@@ -92,64 +92,9 @@ function getContrastColor(hexColor: string) {
   const b = parseInt(hexColor.slice(5, 7), 16);
 
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  const backgroundColor = brightness > 128 ? '#000' : '#fff';
+  const textColor = brightness > 128 ? '#000000' : '#ffffff';
 
-  return brightness > 128 ? '#000000' : '#ffffff';
-}
-
-function getContrastBackground(hexColor: string) {
-  if (typeof hexColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/i.test(hexColor)) {
-    return '#ffffff'; // Retorna branco como cor padrão se a entrada for inválida
-  }
-
-  const r = parseInt(hexColor.slice(1, 3), 16);
-  const g = parseInt(hexColor.slice(3, 5), 16);
-  const b = parseInt(hexColor.slice(5, 7), 16);
-
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-  return brightness > 128 ? '#000' : '#fff';
-}
-
-function getContrastTextColor(hexColor: string, preferredTextColor: string) {
-  if (typeof hexColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/i.test(hexColor)) {
-    return preferredTextColor; 
-  }
-
-  const r = parseInt(hexColor.slice(1, 3), 16);
-  const g = parseInt(hexColor.slice(3, 5), 16);
-  const b = parseInt(hexColor.slice(5, 7), 16);
-
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-  const contrastWithBlack = Math.abs(brightness - 0);
-  const contrastWithWhite = Math.abs(brightness - 255);
-
-  return contrastWithBlack > contrastWithWhite ? '#000' : '#fff';
-}
-
-function getContrastBorderColor(hexColor: string) {
-  if (typeof hexColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/i.test(hexColor)) {
-    return '#000';
-  }
-
-  const r = parseInt(hexColor.slice(1, 3), 16);
-  const g = parseInt(hexColor.slice(3, 5), 16);
-  const b = parseInt(hexColor.slice(5, 7), 16);
-
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-  return brightness > 128 ? '#000000' : '#ffffff';
-}
-
-function App() {
-  const [currentColor, setCurrentColor] = useState(getRandomColor());
-
-  const handleUpdateColor = () => {
-    const newColor = getRandomColor();
-    setCurrentColor(newColor);
-  };
-  const textColor = getContrastColor(currentColor);
-  const backgroundColor = getContrastBackground(currentColor);
   let buttonTextColor;
   let borderColor;
 
@@ -160,9 +105,21 @@ function App() {
     buttonTextColor = '#000';
     borderColor = '#000';
   } else {
-    buttonTextColor = getContrastTextColor(backgroundColor, textColor);
-    borderColor = getContrastBorderColor(backgroundColor);
+    buttonTextColor = brightness > 128 ? '#000' : '#fff';
+    borderColor = brightness > 128 ? '#000000' : '#ffffff';
   }
+
+  return { textColor, backgroundColor, buttonTextColor, borderColor };
+}
+
+function App() {
+  const [currentColor, setCurrentColor] = useState(getRandomColor());
+  const { textColor, backgroundColor, buttonTextColor, borderColor } = getContrastColors(currentColor);
+
+  const handleUpdateColor = () => {
+    const newColor = getRandomColor();
+    setCurrentColor(newColor);
+  };
 
   return (
     <div className='App' style={{ backgroundColor: currentColor }}>
