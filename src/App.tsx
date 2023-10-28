@@ -82,15 +82,64 @@ const getRandomColor = () => {
   return colors[randomIndex];
 };
 
-// function getContrastColor(hexColor) {
-//   const r = parseInt(hexColor.slice(1, 3), 16);
-//   const g = parseInt(hexColor.slice(3, 5), 16);
-//   const b = parseInt(hexColor.slice(5, 7), 16);
+function getContrastColor(hexColor: string) {
+  if (typeof hexColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/i.test(hexColor)) {
+    return '#000'; 
+  }
 
-//   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
 
-//   return brightness > 128 ? '#000' : '#fff';
-// }
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return brightness > 128 ? '#000000' : '#ffffff';
+}
+
+function getContrastBackground(hexColor: string) {
+  if (typeof hexColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/i.test(hexColor)) {
+    return '#ffffff'; // Retorna branco como cor padrão se a entrada for inválida
+  }
+
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
+
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return brightness > 128 ? '#000' : '#fff';
+}
+
+function getContrastTextColor(hexColor: string, preferredTextColor: string) {
+  if (typeof hexColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/i.test(hexColor)) {
+    return preferredTextColor; 
+  }
+
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
+
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  const contrastWithBlack = Math.abs(brightness - 0);
+  const contrastWithWhite = Math.abs(brightness - 255);
+
+  return contrastWithBlack > contrastWithWhite ? '#000' : '#fff';
+}
+
+function getContrastBorderColor(hexColor: string) {
+  if (typeof hexColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/i.test(hexColor)) {
+    return '#000';
+  }
+
+  const r = parseInt(hexColor.slice(1, 3), 16);
+  const g = parseInt(hexColor.slice(3, 5), 16);
+  const b = parseInt(hexColor.slice(5, 7), 16);
+
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return brightness > 128 ? '#000000' : '#ffffff';
+}
 
 function App() {
   const [currentColor, setCurrentColor] = useState(getRandomColor());
@@ -99,12 +148,27 @@ function App() {
     const newColor = getRandomColor();
     setCurrentColor(newColor);
   };
+  const textColor = getContrastColor(currentColor);
+  const backgroundColor = getContrastBackground(currentColor);
+  let buttonTextColor;
+  let borderColor;
+
+  if (backgroundColor === '#000') {
+    buttonTextColor = '#fff';
+    borderColor = '#fff';
+  } else if (backgroundColor === '#fff') {
+    buttonTextColor = '#000';
+    borderColor = '#000';
+  } else {
+    buttonTextColor = getContrastTextColor(backgroundColor, textColor);
+    borderColor = getContrastBorderColor(backgroundColor);
+  }
 
   return (
     <div className='App' style={{ backgroundColor: currentColor }}>
-      <h1>PWA Colorama</h1>
-      <p>{currentColor}</p>
-      <div className='Botao' onClick={handleUpdateColor}>Atualizar</div>
+      <h1 className='H1' style={{ color: textColor}}>PWA Colorama</h1>
+      <p className='Texto' style={{ color: textColor }}>{currentColor}</p>
+      <div className='Botao' style={{ color: buttonTextColor, backgroundColor: backgroundColor, border: `2px solid ${borderColor}` }} onClick={handleUpdateColor}>Atualizar</div>
     </div >
   );
 }

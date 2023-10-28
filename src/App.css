@@ -7,12 +7,23 @@
   height: 100vh;
   flex-direction: column;
 }
+.H1{
+  font-weight: bold;
+  margin: 0px;
+}
 
 .Botao {
   width: 50%;
-  border: 1px solid #ffffff;
+  border: 1px solid #fff;
   border-radius: 8px;
   padding: 10px 20px;
-  background-color: #000000;
+  background-color: #000;
   color: #fff;
+  font-weight: bold;
+  font-size: 25px;
+}
+.Texto {
+  font-size: 25px;
+  font-weight: bold;
+  margin: 10px;
 }
